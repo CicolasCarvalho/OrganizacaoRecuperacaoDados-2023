@@ -1,37 +1,46 @@
 #include "27072023_00.h"
 
+//@start expl
+// Busca Sequencial
+//@end
+
 int main(void) {
     //@start main
     FILE *fd;
-    char nome_arq[30], buffer[120], *campo, sobrenome[30];
-    int comp_campo = 0;
+    char nome_arq[30], buffer[120], *sobrenome, sobrenome_busca[30], *campo;
     bool achou = false;
 
     printf("Insira o nome do arquivo: ");
     scanf("%s", nome_arq);
-    printf("Insira o sobrenome a ser buscado: ");
-    scanf("%s", sobrenome);
+    printf("Insira o sobrenome_busca a ser buscado: ");
+    scanf("%s", sobrenome_busca);
 
     fd = fopen(nome_arq, "rb");
     assert(fd != NULL);
 
-    comp_campo = leia_reg(buffer, 120, fd);
+    int comp_reg = leia_reg(buffer, 150, fd);
 
-    while(comp_campo > 0 && !achou) {
-        char _buf[120] = {0};
-        strcpy(_buf, buffer);
+    while (!achou && comp_reg && !feof(fd)) {
+        sobrenome = strtok(buffer, "|");
 
-        campo = strtok(_buf, "|");
-        assert(campo != NULL);
-
-        if (strcmp(sobrenome, campo) != 0){
-            comp_campo = leia_reg(buffer, 120, fd);
-        } else {
+        if (strcmp(sobrenome, sobrenome_busca) == 0) {
             achou = true;
+        } else {
+            comp_reg = leia_reg(buffer, 150, fd);
         }
     }
 
-    printf("%s: %s", sobrenome, achou ? buffer : "Não encontrado");
+    if (achou) {
+        printf("%s: ", sobrenome_busca);
+        campo = strtok(NULL, "|");
+
+        while (campo != NULL) {
+            printf("%s|", campo);
+            campo = strtok(NULL, "|");
+        }
+    } else {
+        printf("%s nao foi encontrado!", sobrenome_busca);
+    }
     //@end
 
     return 0;
